@@ -1,0 +1,6 @@
+dataset_dir: "data"
+dataset_name: "HC3-Chinese"
+json_dataset_save_name: "hc3_chatgpt_zh_specific_qa.json"
+tokenizer_model: "baichuan-inc/baichuan-7B"
+max_seq_length: 2000
+tokenized_file_save_name: "hc3_chatgpt_zh_specific_qa_baichuan-7B"
