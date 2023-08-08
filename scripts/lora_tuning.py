@@ -8,8 +8,6 @@ from pathlib import Path
 MAIN_PATH = str(Path(__file__).absolute().parent.parent)
 sys.path.insert(0, MAIN_PATH)
 
-from transformers.integrations import TensorBoardCallback
-from torch.utils.tensorboard import SummaryWriter
 from transformers import TrainingArguments
 from transformers import Trainer, HfArgumentParser
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -62,14 +60,14 @@ class ModifiedTrainer(Trainer):
         # torch.save(saved_params, os.path.join(output_dir, "adapter_model.bin"))
 
 def main():
-    writer = SummaryWriter()
     finetune_args, training_args = HfArgumentParser(
         (FinetuneArguments, TrainingArguments)
     ).parse_args_into_dataclasses()
+    training_args.report_to = []
 
     # load dataset
-    dataset = datasets.load_from_disk('data/HC3/'+finetune_args.tokenized_dataset)
-    print(f"\n{len(dataset)=}\n")
+    dataset = datasets.load_from_disk('../data/HC3/'+finetune_args.tokenized_dataset)
+    print(f"{len(dataset)}")
 
     # init model
     model = AutoModelForCausalLM.from_pretrained(
@@ -107,11 +105,9 @@ def main():
         model=model,
         train_dataset=dataset,
         args=training_args,
-        callbacks=[TensorBoardCallback(writer)],
         data_collator=data_collator,
     )
     trainer.train()
-    writer.close()
     # save model
     model.save_pretrained(training_args.output_dir)
 

@@ -2,7 +2,7 @@
 
 # set -xe
 
-CUDA_VISIBLE_DEVICES=0,1 python lora_tuning.py \
+CUDA_VISIBLE_DEVICES=0 python lora_tuning.py \
     --tokenized_dataset hc3_chatgpt_zh_specific_qa_baichuan-7B \
     --lora_rank 4 \
     --per_device_train_batch_size 16 \
