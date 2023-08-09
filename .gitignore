@@ -163,3 +163,4 @@ data/
 .DS_Store
 submit.sh
 slurm*
+weights/
