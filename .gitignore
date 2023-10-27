@@ -164,3 +164,6 @@ data/
 submit.sh
 slurm*
 weights/
+
+cached_data/
+saved_model/
