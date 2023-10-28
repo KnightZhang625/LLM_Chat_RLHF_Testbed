@@ -1,9 +1,12 @@
 # coding:utf-8
-
+# The code is taken from 
+#   - https://mp.weixin.qq.com/s/b25VZqmG5p5Eb2Wr-Lt9tw
+#   - https://github.com/beyondguo/LLM-Tuning
 # import os
 # os.environ["NCCL_DEBUG"]="INFO"
 # os.environ["NCCL_BLOCKING_WAIT"]="1"
 
+import os
 import torch
 import torch.nn as nn
 import datasets
@@ -60,7 +63,7 @@ def main(args):
     # device = "cuda" if torch.cuda.is_available() else "cpu"
     
     dataset = datasets.load_from_disk(args.processed_data)
-    data_loader = DataLoader(dataset, batch_size=2, shuffle=True, collate_fn=collate_fn)
+    data_loader = DataLoader(dataset, batch_size=8, shuffle=True, collate_fn=collate_fn)
 
     model = AutoModel.from_pretrained(
         args.model_name, load_in_8bit=False, trust_remote_code=True, local_files_only=True
@@ -106,7 +109,8 @@ def main(args):
 
             if step % 100 == 0 and accelerator.is_main_process:
                 unwrapped_model = accelerator.unwrap_model(model)
-                unwrapped_model.save_pretrained(args.output_dir)
+                save_dir = os.path.join(args.output_dir, f"{step}_chatglm3-6b")
+                unwrapped_model.save_pretrained(save_dir)
 
 if __name__ == "__main__":
     main(args)

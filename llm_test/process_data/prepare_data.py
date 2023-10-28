@@ -16,8 +16,8 @@ parser.add_argument("--prompt_key", type=str)
 parser.add_argument("--target_key", type=str)
 
 args = parser.parse_args()
-tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True, local_files_only=True)
-config = AutoConfig.from_pretrained(args.model_name, trust_remote_code=True, device_map='auto', local_files_only=True)
+tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+config = AutoConfig.from_pretrained(args.model_name, trust_remote_code=True, device_map='auto')
 
 def preprocess(tokenizer, config, example, max_seq_length, prompt_key, target_key):
     prompt = example[prompt_key]
@@ -33,14 +33,14 @@ def preprocess(tokenizer, config, example, max_seq_length, prompt_key, target_ke
 
 def read_jsonl(path, max_seq_length, prompt_key, target_key):
     with open(path, "r", encoding="utf-8") as file:
-        datas = json.load(file)
-    for example in datas:
-        feature = preprocess(tokenizer, config, example, max_seq_length, prompt_key, target_key)
-        if feature == None:
-            continue
-        if len(feature["input_ids"]) > max_seq_length:
-            continue
-        yield feature
+        for line in tqdm(file.readlines()):
+            example = json.loads(line)
+            feature = preprocess(tokenizer, config, example, max_seq_length, prompt_key, target_key)
+            if feature == None:
+                continue
+            if len(feature["input_ids"]) > max_seq_length:
+                continue
+            yield feature
 
 def main(args):
     input_path = args.input_file
